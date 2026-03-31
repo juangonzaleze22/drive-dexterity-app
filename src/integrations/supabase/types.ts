@@ -14,7 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      maintenance_records: {
+        Row: {
+          cost: number | null
+          created_at: string
+          id: string
+          km_at_service: number
+          maintenance_type_id: string
+          notes: string | null
+          service_date: string
+          vehicle_id: string
+          workshop: string | null
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string
+          id?: string
+          km_at_service: number
+          maintenance_type_id: string
+          notes?: string | null
+          service_date?: string
+          vehicle_id: string
+          workshop?: string | null
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string
+          id?: string
+          km_at_service?: number
+          maintenance_type_id?: string
+          notes?: string | null
+          service_date?: string
+          vehicle_id?: string
+          workshop?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_records_maintenance_type_id_fkey"
+            columns: ["maintenance_type_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          interval_km: number
+          interval_months: number | null
+          is_custom: boolean
+          name: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          interval_km?: number
+          interval_months?: number | null
+          is_custom?: boolean
+          name: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          interval_km?: number
+          interval_months?: number | null
+          is_custom?: boolean
+          name?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_types_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          brand: string
+          created_at: string
+          current_km: number
+          id: string
+          model: string
+          photo_url: string | null
+          plate: string
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          brand: string
+          created_at?: string
+          current_km?: number
+          id?: string
+          model: string
+          photo_url?: string | null
+          plate: string
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          brand?: string
+          created_at?: string
+          current_km?: number
+          id?: string
+          model?: string
+          photo_url?: string | null
+          plate?: string
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
