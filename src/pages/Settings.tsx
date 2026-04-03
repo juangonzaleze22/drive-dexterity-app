@@ -1,7 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { BottomNav } from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { LogOut, User, Car, Shield } from 'lucide-react';
 
 const Settings = () => {
@@ -9,48 +8,52 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-md px-4 py-4">
-        <h1 className="text-xl font-bold text-foreground">Ajustes</h1>
+      <div className="sticky top-0 z-40 border-b border-border/30 bg-background/90 backdrop-blur-xl px-5 py-5">
+        <h1 className="text-2xl font-extrabold text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>Ajustes</h1>
       </div>
 
-      <div className="space-y-4 px-4 py-4">
+      <div className="space-y-4 px-5 py-5">
         {/* Profile */}
-        <Card className="border-border/50 bg-card">
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <User className="h-6 w-6 text-primary" />
+        <div className="overflow-hidden rounded-2xl border border-border/30 bg-card">
+          <div className="gradient-primary p-4">
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+                <User className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  {user?.user_metadata?.full_name || 'Usuario'}
+                </h3>
+                <p className="text-sm text-white/70">{user?.email}</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-foreground">
-                {user?.user_metadata?.full_name || 'Usuario'}
-              </h3>
-              <p className="text-sm text-muted-foreground">{user?.email}</p>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Info */}
-        <Card className="border-border/50 bg-card">
-          <CardContent className="p-4 space-y-4">
-            <div className="flex items-center gap-3">
-              <Car className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <h4 className="text-sm font-medium text-foreground">AutoCare</h4>
-                <p className="text-xs text-muted-foreground">Versión 1.0.0</p>
-              </div>
+        <div className="rounded-2xl border border-border/30 bg-card p-5 space-y-5">
+          <div className="flex items-center gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
+              <Car className="h-5 w-5 text-primary" />
             </div>
-            <div className="flex items-center gap-3">
-              <Shield className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <h4 className="text-sm font-medium text-foreground">Datos seguros</h4>
-                <p className="text-xs text-muted-foreground">Tu información está protegida en la nube</p>
-              </div>
+            <div>
+              <h4 className="text-sm font-semibold text-foreground">AutoCare</h4>
+              <p className="text-xs text-muted-foreground">Versión 1.0.0</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[hsl(var(--status-green)/0.1)]">
+              <Shield className="h-5 w-5 text-[hsl(var(--status-green))]" />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-foreground">Datos seguros</h4>
+              <p className="text-xs text-muted-foreground">Tu información está protegida en la nube</p>
+            </div>
+          </div>
+        </div>
 
         {/* Sign out */}
-        <Button variant="destructive" className="w-full gap-2" onClick={signOut}>
+        <Button variant="destructive" className="w-full gap-2 rounded-xl font-semibold" onClick={signOut}>
           <LogOut className="h-4 w-4" />
           Cerrar sesión
         </Button>

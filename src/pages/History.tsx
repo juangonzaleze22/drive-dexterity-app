@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { BottomNav } from '@/components/BottomNav';
-import { Calendar, DollarSign, Wrench } from 'lucide-react';
+import { Calendar, DollarSign, Wrench, MapPin } from 'lucide-react';
 
 interface HistoryRecord {
   id: string;
@@ -73,45 +73,57 @@ const History = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-md px-4 py-4">
-        <h1 className="text-xl font-bold text-foreground">Historial</h1>
+      <div className="sticky top-0 z-40 border-b border-border/30 bg-background/90 backdrop-blur-xl px-5 py-5">
+        <h1 className="text-2xl font-extrabold text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>Historial</h1>
       </div>
 
-      <div className="px-4 py-4">
+      <div className="px-5 py-5">
         {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => <div key={i} className="h-20 animate-pulse rounded-lg bg-card" />)}
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => <div key={i} className="h-24 animate-pulse rounded-2xl bg-card border border-border/20" />)}
           </div>
         ) : records.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 py-16 text-center">
-            <Wrench className="h-12 w-12 text-muted-foreground" />
-            <p className="text-muted-foreground">No hay registros de mantenimiento aún</p>
+          <div className="flex flex-col items-center gap-5 py-20 text-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted">
+              <Wrench className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>Sin registros</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Aún no has registrado ningún mantenimiento</p>
+            </div>
           </div>
         ) : (
           <div className="space-y-3">
             {records.map((r) => (
-              <div key={r.id} className="rounded-lg border border-border/50 bg-card p-4">
+              <div key={r.id} className="rounded-2xl border border-border/30 bg-card p-4 transition-all hover:border-border/50">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground">{r.maintenance_type_name}</h3>
+                    <h3 className="text-sm font-bold text-foreground">{r.maintenance_type_name}</h3>
                     <p className="text-xs text-muted-foreground">{r.vehicle_name}</p>
                   </div>
-                  {r.cost && (
-                    <span className="flex items-center gap-1 text-sm font-mono font-semibold text-primary">
-                      <DollarSign className="h-3 w-3" />
+                  {r.cost != null && r.cost > 0 && (
+                    <span className="flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1 text-sm font-mono font-bold text-primary">
+                      <DollarSign className="h-3.5 w-3.5" />
                       {r.cost.toFixed(2)}
                     </span>
                   )}
                 </div>
-                <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {new Date(r.service_date).toLocaleDateString('es-ES')}
+                <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {new Date(r.service_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
-                  <span>{r.km_at_service.toLocaleString()} km</span>
-                  {r.workshop && <span>📍 {r.workshop}</span>}
+                  <span className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1">
+                    {r.km_at_service.toLocaleString()} km
+                  </span>
+                  {r.workshop && (
+                    <span className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {r.workshop}
+                    </span>
+                  )}
                 </div>
-                {r.notes && <p className="mt-2 text-xs text-muted-foreground">{r.notes}</p>}
+                {r.notes && <p className="mt-2 text-xs text-muted-foreground italic">{r.notes}</p>}
               </div>
             ))}
           </div>
