@@ -53,10 +53,8 @@ const VehicleDetail = () => {
     setVehicle(v);
     setNewKm(v.current_km);
 
-    // Get maintenance types for this vehicle
     let { data: types } = await supabase.from('maintenance_types').select('*').eq('vehicle_id', id);
 
-    // If no types yet, seed defaults
     if (!types || types.length === 0) {
       const defaults = DEFAULT_MAINTENANCE_TYPES.map((d) => ({
         vehicle_id: id,
@@ -72,7 +70,6 @@ const VehicleDetail = () => {
       types = seeded || [];
     }
 
-    // For each type, get latest record
     const enriched: MaintenanceWithRecord[] = await Promise.all(
       types.map(async (t: MaintenanceType) => {
         const { data: records } = await supabase
@@ -89,6 +86,13 @@ const VehicleDetail = () => {
         };
       })
     );
+
+    // Sort: items with records first (by status priority), then no-record items
+    enriched.sort((a, b) => {
+      if (a.lastServiceKm > 0 && b.lastServiceKm === 0) return -1;
+      if (a.lastServiceKm === 0 && b.lastServiceKm > 0) return 1;
+      return 0;
+    });
 
     setMaintenances(enriched);
     setLoading(false);
@@ -116,67 +120,92 @@ const VehicleDetail = () => {
   if (loading || !vehicle) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Cargando...</div>
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">Cargando vehículo...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header */}
-      <div className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-md px-4 py-3">
+      {/* Header with gradient */}
+      <div className="sticky top-0 z-40 border-b border-border/30 bg-background/90 backdrop-blur-xl px-4 py-3">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="rounded-xl">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-foreground">{vehicle.brand} {vehicle.model}</h1>
-            <p className="text-xs text-muted-foreground">{vehicle.year} · {vehicle.plate}</p>
+            <h1 className="text-lg font-bold text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {vehicle.brand} {vehicle.model}
+            </h1>
+            <p className="text-xs text-muted-foreground">{vehicle.year} · <span className="uppercase tracking-wider">{vehicle.plate}</span></p>
           </div>
-          <Button variant="ghost" size="icon" onClick={deleteVehicle} className="text-destructive">
+          <Button variant="ghost" size="icon" onClick={deleteVehicle} className="rounded-xl text-destructive hover:text-destructive">
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {/* KM Card */}
-      <div className="px-4 py-4">
-        <div className="rounded-xl border border-border/50 bg-card p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                <Gauge className="h-6 w-6 text-primary" />
+      {/* Vehicle Hero Card */}
+      <div className="px-5 py-5">
+        <div className="overflow-hidden rounded-2xl border border-border/30 bg-card">
+          <div className="gradient-primary p-5">
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+                <Car className="h-8 w-8 text-white" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Kilometraje actual</p>
-                {editingKm ? (
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      value={newKm}
-                      onChange={(e) => setNewKm(parseInt(e.target.value) || 0)}
-                      className="h-8 w-28"
-                    />
-                    <Button size="sm" onClick={updateKm}><Save className="h-3 w-3" /></Button>
-                  </div>
-                ) : (
-                  <p className="text-2xl font-bold text-foreground">{vehicle.current_km.toLocaleString()} km</p>
-                )}
+                <h2 className="text-xl font-extrabold text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  {vehicle.brand} {vehicle.model}
+                </h2>
+                <p className="text-sm text-white/70">{vehicle.year} · <span className="uppercase tracking-wider">{vehicle.plate}</span></p>
               </div>
             </div>
-            {!editingKm && (
-              <Button variant="ghost" size="icon" onClick={() => setEditingKm(true)}>
-                <Pencil className="h-4 w-4" />
-              </Button>
-            )}
+          </div>
+
+          <div className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <Gauge className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Kilometraje actual</p>
+                  {editingKm ? (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={newKm}
+                        onChange={(e) => setNewKm(parseInt(e.target.value) || 0)}
+                        className="h-8 w-28 rounded-lg"
+                      />
+                      <Button size="sm" onClick={updateKm} className="rounded-lg gradient-primary text-primary-foreground">
+                        <Save className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="text-2xl font-bold text-foreground font-mono">{vehicle.current_km.toLocaleString()} km</p>
+                  )}
+                </div>
+              </div>
+              {!editingKm && (
+                <Button variant="ghost" size="icon" onClick={() => setEditingKm(true)} className="rounded-xl">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Maintenance List */}
-      <div className="px-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Mantenimientos</h2>
+      <div className="px-5">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            Mantenimientos
+          </h2>
           <AddMaintenanceDialog
             vehicleId={vehicle.id}
             currentKm={vehicle.current_km}

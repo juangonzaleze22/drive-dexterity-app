@@ -42,7 +42,6 @@ const Dashboard = () => {
       return;
     }
 
-    // For each vehicle, get maintenance types and latest records
     const enriched: VehicleWithStatus[] = await Promise.all(
       vehiclesData.map(async (v: Vehicle) => {
         const { data: types } = await supabase
@@ -87,44 +86,52 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-md px-4 py-4">
+      <div className="sticky top-0 z-40 border-b border-border/30 bg-background/90 backdrop-blur-xl px-5 py-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Hola,</p>
-            <h1 className="text-xl font-bold text-foreground">{userName}</h1>
+            <p className="text-sm text-muted-foreground">Bienvenido,</p>
+            <h1 className="text-2xl font-extrabold text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {userName}
+            </h1>
           </div>
-          <Button variant="ghost" size="icon" onClick={signOut}>
+          <Button variant="ghost" size="icon" onClick={signOut} className="rounded-xl text-muted-foreground hover:text-foreground">
             <LogOut className="h-5 w-5" />
           </Button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="px-4 py-4">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Mis vehículos</h2>
+      <div className="px-5 py-5">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            Mis vehículos
+          </h2>
           <AddVehicleDialog onAdded={fetchVehicles} />
         </div>
 
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[1, 2].map((i) => (
-              <div key={i} className="h-28 animate-pulse rounded-lg bg-card" />
+              <div key={i} className="h-32 animate-pulse rounded-2xl bg-card border border-border/20" />
             ))}
           </div>
         ) : vehicles.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 py-16 text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10">
-              <Car className="h-10 w-10 text-primary" />
+          <div className="flex flex-col items-center gap-5 py-20 text-center">
+            <div className="flex h-24 w-24 items-center justify-center rounded-3xl gradient-primary glow-primary">
+              <Car className="h-12 w-12 text-primary-foreground" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Sin vehículos</h3>
-              <p className="text-sm text-muted-foreground">Agrega tu primer vehículo para comenzar</p>
+              <h3 className="text-xl font-bold text-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Sin vehículos
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Agrega tu primer vehículo para comenzar a gestionar su mantenimiento
+              </p>
             </div>
             <AddVehicleDialog onAdded={fetchVehicles} />
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {vehicles.map((v) => (
               <VehicleCard key={v.id} {...v} />
             ))}
